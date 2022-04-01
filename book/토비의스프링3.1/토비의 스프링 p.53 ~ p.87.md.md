@@ -1,0 +1,79 @@
+
+p.53 ~ p.87
+
+스프링이 가장 관심을 많이 두는 대상은 오브젝트이다.</br>
+스프링을 이해하려면 먼저 오브젝트에 깊은 관심을 가져야 한다.</br>
+애플리케이션에서 오브젝트가 생성되고 다른 오브젝트와 관계를 맺고, 사용되고, 소멸하기까지의 전 과정을 진지하게 생각해 봐야 한다.
+
+----
+
+
+
+
+```java
+public class userDao{
+  public void add(User user) throws ClassNotFoundException, SQLException {
+		Class.forName("com.mysql.jdbc.Driver");
+		Connection c = DriverManager.getConnection("jdbc:mysql://localhost/springbook?characterEncoding=UTF-8", "spring",
+				"book");
+
+		PreparedStatement ps = c.prepareStatement(
+			"insert into users(id, name, password) values(?,?,?)");
+		ps.setString(1, user.getId());
+		ps.setString(2, user.getName());
+		ps.setString(3, user.getPassword());
+
+		ps.executeUpdate();
+
+		ps.close();
+		c.close();
+	}
+}
+```
+1. 위의 코드는 jdbc를 연결하고 데이터베이스에 값을 넣을 쿼리문을 실행하는 코드인데, </br>
+이런저런 다른 관심사가 한데 섞여있다.(connection을 연결하고, statement를 만들고, 쿼리문을 실행하고)</br>
+실행은 문제없이 되지만, 만약 드라이버 주소등의 수정이 필요할 때 모든 connection 코드를 찾아서 수정해야 되는 등 유지보수에는 매우 취약할 것이다.
+
+
+2. 드라이버를 연결하는 connection 코드를 getConnection 메소드로 만들어 추출해주고, </br>
+UserDAO 클래스를 추상클래스로 만든 후 서브클래스로 useDAO를 상속받아 getConnection 메소드를 오버라이드한 후 각각 사용자의 드라이버에 맞게 수정해주면 </br>
+사용자마다 드라이버가 다 달라도 userDAO를 매번 설정하지 않아도 되는 유지보수에 좋은 코드로 변경할 수 있다.
+
+
+3. 그러나 상속은 상하위 클래스가 관계가 밀접하다는 단점이 있다. </br>
+슈퍼클래스에 변경이 생기면 서브클래스도 함께 수정을 해줘야 한다던가, 혹은 getConnection()메서드를 다른 클래스에서는 사용하지 못한다는 것이다.</br>
+또한 드라이버를 connection 하는것과 db에 값을 저장한다는것은 관심사가 다르니 두가지를 분리하기 위해 connection 코드를 따로 클래스로 만들어 빼준다.</br>
+두가지를 분리하고 또 자유로운 확장도 가능하게 하기 위해서는 connection 클래스를 인터페이스로 만든다. 인터페이스로 만들면 특정 클래스와 코드에 종속적이지 않아도 된다.
+
+4. 인터페이스로 만든다고 해도 connection 클래스를 생성할때 실제 구현 클래스의 이름이 나오니 유지보수에 적합하지 않다. </br>
+독립적인 userDAO를 만들기 위해 connection클래스의 관계설정을 해줄 클래스를 따로 만들고 그 안에서 UserDAO를 생성해서 사용해주면</br>
+아래와 같이 비교적 유지보수와 확장에 용이한 코드가 만들어진다.
+
+```java
+
+public class UserDaoTest {
+	public static void main(String[] args) throws ClassNotFoundException, SQLException {
+		ConnectionMaker connectionMaker = new DConnectionMaker();
+		UserDao dao = new UserDao(connectionMaker);
+
+		User user = new User();
+		user.setId("whiteship");
+		user.setName("백기선");
+		user.setPassword("married");
+
+		dao.add(user);
+			
+		System.out.println(user.getId() + " 등록 성공");
+		
+		User user2 = dao.get(user.getId());
+		System.out.println(user2.getName());
+		System.out.println(user2.getPassword());
+			
+		System.out.println(user2.getId() + " 조회 성공");
+	}
+}
+
+```
+
+
+
