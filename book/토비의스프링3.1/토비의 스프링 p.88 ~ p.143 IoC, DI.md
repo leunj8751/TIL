@@ -53,6 +53,33 @@ UserDAO와 ConnectionMaker사이에 DaoFactory가 권한을 가지로 오브젝�
 2. 런타임 시점의 의존관계는 컨테이너 같은 제 3의 존재가 결정해야 한다.
 3. 의존관계를 사용할 오브젝트에 대한 래퍼런스는 외부에서 제공해줘야 한다.
 
+```java
+public UserDao(){
+	connectionMaker = new DConnectionMaker();
+}
+
+```
+위의 UserDao의 생성자는 런타임 시점에 어떤 클래스를 구현할지를 알고 있는, 의존관계가 코드에 결정되어 있다.
+
+```java
+
+public class UserDao {
+	private ConnectionMaker connectionMaker;
+	
+	public UserDao(ConnectionMaker connectionMaker) {
+		this.connectionMaker = connectionMaker;
+	}
+
+```
+아래와 같이 생성자의 코드를 수정한다면, 런타임 시점의 의존관계는 드러나지 않게 되고, 
+생성자를 통해 외부에서 파라미터로 오브젝트를 주입시킬 수 있다.
+여기서 의존관계를 맺어줄 클래스의 오브젝트를 만들고, 생성자의 파라미터로 오브젝트를 전달해주는것이 DI 컨테이너다.</br>
+DI는 자신이 사용할 오브젝트에 대한 선택과 생성 제어권을 외부로 넘기고 자신은 수동적으로 주입받은 오브젝트를 사용한다는 점에서 Ioc개념에 들어맞는다.
+
+
+
+
+
 
 
 
