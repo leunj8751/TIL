@@ -70,7 +70,64 @@ public class UserServiceTx implements UserService{
 지금 유저의 Level을 업그레이드하고 메일을 보내는 UserService 클래스의 기능을 테스트 하기 위해서는 UserDAO 오브젝트를 사용해야 되는데, DB와 연결하여 데이터를 가져오는 행위는 
 userService 테스트에 방해가 될 수 있으니, 고립된 단위 테스트를 만들기 위해 UserDao 역할을 하며 UserService 사이에서 주고받은 정보를 저장해둘 수 있는 목 오브젝트를 만들어보자.
 
+```java
+// userDao의 목 오브젝트
+static class MockUserDao implements UserDao{
 
+		private List<User> users;
+		private List<User> updated = new ArrayList(); // 업데이트 대상 오브젝트를 저장해둘 목록
+		
+		private MockUserDao(List<User> users) {
+			this.users = users;
+		}
+		
+		public List<User> getUpdated(){
+			return this.updated;
+		}
+		
+		public void update(User user) { // 스텁기능 제공
+			updated.add(user);
+		}
+		
+		public List<User> getAll() { // 목 오브젝트 기능 제공
+			return this.users;
+		}
+		
+		public void add(User user) {throw new UnsupportedOperationException();}
+		public User get(String id) {throw new UnsupportedOperationException();}
+		public void deleteAll() {throw new UnsupportedOperationException();}
+		public int  getCount() {throw new UnsupportedOperationException();}
+		
+	}
+
+
+// 목 오브젝트를 이용한 단위 테스트코드
+@Test
+	@DirtiesContext
+	public void upgradeLevels() throws Exception{
+		
+		MockUserDao mockUserDao = new MockUserDao(this.users);
+		UserServiceImpl userServiceImpl = new UserServiceImpl();
+		userServiceImpl.setUserDao(mockUserDao);
+		
+		MockMailSender mockMailSender = new MockMailSender();
+		userServiceImpl.setMailSender(mockMailSender);
+		
+		userServiceImpl.upgradeLevels();
+
+		List<User> updated = mockUserDao.getUpdated();
+		assertThat(updated.size(),is(2));
+		checkUserAndLevel(updated.get(0),"joytouch",Level.SILVER);
+		checkUserAndLevel(updated.get(1),"madnite1",Level.GOLD);
+		
+		List<String> request = mockMailSender.getRequests();  
+		assertThat(request.size(), is(2));  
+		assertThat(request.get(0), is(users.get(1).getEmail()));  
+		assertThat(request.get(1), is(users.get(3).getEmail()));  
+		
+	}
+
+```
 
 
 
