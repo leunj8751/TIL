@@ -66,6 +66,15 @@ p.429 ~ p.448
  
  ```java
  
+ //프록시 생성코드
+
+Hello proxyHello = (Hello)Proxy.newProxyInstance(
+			getClass().getClassLoader(),
+			new Class[] {Hello.class}, // 구현할 인터페이스
+			new UppercaseHandler(new HelloTarget())); 
+ 
+ 
+ 
  public class UppercaseHandler implements InvocationHandler{
 
 	Hello target;
@@ -85,12 +94,7 @@ p.429 ~ p.448
 	
 }
 
-//프록시 생성코드
 
-Hello proxyHello = (Hello)Proxy.newProxyInstance(
-			getClass().getClassLoader(),
-			new Class[] {Hello.class}, // 구현할 인터페이스
-			new UppercaseHandler(new HelloTarget())); 
  ```
  
  `userServiceTx`를 다이내믹 프록시를 이용하여 수정하면 아래와 같이 만들 수 있다.
@@ -158,12 +162,10 @@ Hello proxyHello = (Hello)Proxy.newProxyInstance(
 		txHandler.setTransactionManager(this.transactionManager);
 		txHandler.setPattern("upgradeLevels");
 		
-		
 		UserService txUserService = (UserService)Proxy.newProxyInstance(
 				getClass().getClassLoader(),
 				new Class[] {UserService.class}, // 구현할 인터페이스
 				txHandler); 
-		
 		
 		userDao.deleteAll();
 		for(User user : users) userDao.add(user);
@@ -196,14 +198,8 @@ Hello proxyHello = (Hello)Proxy.newProxyInstance(
 			
 			super.upgradeLevel(user);
 		}
-		
-		
-		
-		
 	}
 
-
-
-
  ```
- 
+ 부가기능을 부여할 `TransactionHandler` 클래스를 생성하고 필요한 파라미터들을 주입한다.
+ 그럼 `TransactionHandler`클래스에서 `invoke()`를 통해 타깃 오브젝트에 접근하여 비즈니스 로직을 실행하고, 부가기능도 부여해 줄 수 있다.
