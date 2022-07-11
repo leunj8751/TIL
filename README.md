@@ -6,6 +6,8 @@
 \*  언제,누가 봐도 이해할 수 있을 정도로 쉬운 말로 깔끔하게 기록하기.</br>
 \*  모르는 부분은 그냥 넘어가지 말고 체크해뒀다가 완벽하게 이해하기!</br>
 
+블로그 : https://leun-j.tistory.com/
+
 ---
 ### Book
 * [토비의 스프링 3.1](https://github.com/leunj8751/TIL/tree/main/book/%ED%86%A0%EB%B9%84%EC%9D%98%EC%8A%A4%ED%94%84%EB%A7%813.1)
