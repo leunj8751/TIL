@@ -25,7 +25,7 @@ public class UserDaoTest {
 }
 
 ```
-
+//
  ** **제어의 역전** **<br>
  
 위 코드에서 보면 UserDaoFactory가 오브젝트 생성과 구현을 담당하니, UserDao는 수동적으로 UserDaoFactory의 오브젝트를 공급받아 사용한다.
