@@ -15,5 +15,5 @@
 ### 알고리즘
   * [DFS&BFS](https://github.com/leunj8751/TIL/tree/main/Algorithm/DFS%26BFS)
   * [Dynamic Programming](https://github.com/leunj8751/TIL/tree/main/Algorithm/Dynamic%20Programming)
-  * [Grid](https://github.com/leunj8751/TIL/tree/main/Algorithm/Grid)
+  * [Greedy](https://github.com/leunj8751/TIL/tree/main/Algorithm/Grid)
   
